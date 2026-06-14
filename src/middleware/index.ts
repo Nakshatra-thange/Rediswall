@@ -49,11 +49,7 @@ export function createRedisWall(config: RedisWallConfig): RedisWallMiddleware {
       const identifier = getIdentifier(req);
       const tierName = getTier(req);
       const tier = resolveTier(tierName, config.tiers);
-      console.log("REQUEST", {
-        identifier,
-        tierName,
-        tier,
-      });
+      
   
       let result: RateLimitResult;
   

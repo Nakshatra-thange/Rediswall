@@ -2,7 +2,6 @@ import express from "express";
 import request from "supertest";
 import Redis from "ioredis";
 import { createRedisWall } from "../../src";
-import { CircuitBreaker } from "../../src/circuit-breaker";
 import { describe, expect, it, afterAll } from "@jest/globals";
 /*
  * Failure mode tests
@@ -61,27 +60,50 @@ afterAll(async () => {
 // ── fail-open behaviour ───────────────────────────────────────────────────────
 
 describe("fail-open (default behaviour)", () => {
-  it("allows requests through when Redis is completely down", async () => {
-    const app = express();
-    const limiter = createRedisWall({
-      redis: createBrokenRedis(),
-      strategy: "sliding-window",
-      tiers: { default: { name: "default", limit: 5, windowMs: 60_000 } },
-      defaultTier: "default",
-      failOpen: true,
-      circuitBreaker: { failureThreshold: 3, cooldownMs: 60_000 },
-    });
-
-    app.get("/test", limiter, (_req, res) => res.json({ ok: true }));
-
-    // First 3 requests hit Redis (fail), circuit opens on 3rd failure
-    // After circuit opens, fallback takes over
-    // All should return 200 because failOpen=true
-    for (let i = 0; i < 10; i++) {
-      const res = await request(app).get("/test");
-      expect(res.status).toBe(200);
-    }
-  });
+    it("uses fallback rate limiting when Redis is completely down", async () => {
+        const app = express();
+      
+        const limiter = createRedisWall({
+          redis: createBrokenRedis(),
+          strategy: "sliding-window",
+          tiers: {
+            default: {
+              name: "default",
+              limit: 5,
+              windowMs: 60_000,
+            },
+          },
+          defaultTier: "default",
+          failOpen: true,
+          circuitBreaker: {
+            failureThreshold: 3,
+            cooldownMs: 60_000,
+          },
+          identifierFn: () => "fallback-user",
+        });
+      
+        app.get("/test", limiter, (_req, res) => res.json({ ok: true }));
+      
+        const responses = await Promise.all(
+          Array.from({ length: 10 }, () => request(app).get("/test"))
+        );
+      
+        const successCount = responses.filter(
+          (r) => r.status === 200
+        ).length;
+      
+        const blockedCount = responses.filter(
+          (r) => r.status === 429
+        ).length;
+      
+        expect(successCount).toBeGreaterThan(0);
+        expect(blockedCount).toBeGreaterThan(0);
+      
+        // failOpen=true should never return 503
+        expect(
+          responses.every((r) => r.status !== 503)
+        ).toBe(true);
+      });
 
   it("in-memory fallback still enforces limits when circuit is open", async () => {
     const app = express();
@@ -93,7 +115,7 @@ describe("fail-open (default behaviour)", () => {
       failOpen: true,
       // Open circuit immediately — threshold=1 means first failure opens it
       circuitBreaker: { failureThreshold: 1, cooldownMs: 60_000 },
-      identifierFn: (req) => req.headers["x-id"] as string ?? "test",
+      identifierFn: (req) => (req.headers["x-id"] as string) ?? "test",
     });
 
     app.get("/test", limiter, (_req, res) => res.json({ ok: true }));
@@ -235,7 +257,7 @@ describe("callbacks", () => {
       strategy: "sliding-window",
       tiers: { default: { name: "default", limit: 2, windowMs: 60_000 } },
       defaultTier: "default",
-      identifierFn: (req) => req.headers["x-id"] as string ?? "test",
+      identifierFn: (req) => (req.headers["x-id"] as string) ?? "test",
       onLimitReached: (req) => {
         limitReachedCalls.push(req.headers["x-id"] as string);
       },
