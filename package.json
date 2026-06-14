@@ -1,5 +1,5 @@
 {
-  "name": "rediswall",
+  "name": "@nakshatrathange/rediswall",
   "version": "0.1.0",
   "description": "Distributed rate limiting framework for Express — sliding window, token bucket, circuit breaker, multi-tier",
   "main": "./dist/index.js",
@@ -49,6 +49,8 @@
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/supertest": "^7.2.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "autocannon": "^8.0.0",
     "jest": "^30.4.2",
     "supertest": "^7.2.2",
@@ -56,5 +58,9 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1",
     "typescript": "5.9"
+  },
+  "dependencies": {
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
   }
 }
