@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "commonjs",
+    "types": ["node", "jest"],
     "lib": ["ES2020"],
     "outDir": "./dist",
     "rootDir": "./src",
@@ -14,6 +15,6 @@
     "sourceMap": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "tests/**/*"],
   "exclude": ["node_modules", "dist", "tests", "benchmark"]
 }
