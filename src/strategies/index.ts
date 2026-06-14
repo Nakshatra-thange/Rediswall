@@ -1,36 +1,28 @@
-import type { RateLimitStrategy } from "../types";
+import type { StrategyName, RateLimitStrategy } from "../types";
 
-export const slidingWindow: RateLimitStrategy = {
-  name: "sliding-window",
-  async check(_identifier, _limit, _windowMs, _redis) {
-    throw new Error("sliding-window: not yet implemented");
-  },
-};
+export { fixedWindow } from "./fixed-window";
+export { slidingWindow } from "./sliding-window";
+export { tokenBucket } from "./token-bucket";
+export { leakyBucket } from "./leaky-bucket";
 
-export const fixedWindow: RateLimitStrategy = {
-  name: "fixed-window",
-  async check(_identifier, _limit, _windowMs, _redis) {
-    throw new Error("fixed-window: not yet implemented");
-  },
-};
+import { fixedWindow } from "./fixed-window";
+import { slidingWindow } from "./sliding-window";
+import { tokenBucket } from "./token-bucket";
+import { leakyBucket } from "./leaky-bucket";
 
-export const tokenBucket: RateLimitStrategy = {
-  name: "token-bucket",
-  async check(_identifier, _limit, _windowMs, _redis) {
-    throw new Error("token-bucket: not yet implemented");
-  },
-};
-
-export const leakyBucket: RateLimitStrategy = {
-  name: "leaky-bucket",
-  async check(_identifier, _limit, _windowMs, _redis) {
-    throw new Error("leaky-bucket: not yet implemented");
-  },
-};
-
-export const strategies: Record<string, RateLimitStrategy> = {
+export const strategies: Record<StrategyName, RateLimitStrategy> = {
   "sliding-window": slidingWindow,
   "fixed-window": fixedWindow,
   "token-bucket": tokenBucket,
   "leaky-bucket": leakyBucket,
 };
+
+export function getStrategy(name: StrategyName): RateLimitStrategy {
+  const strategy = strategies[name];
+  if (!strategy) {
+    throw new Error(
+      `rediswall: unknown strategy "${name}". Available: ${Object.keys(strategies).join(", ")}`
+    );
+  }
+  return strategy;
+}
