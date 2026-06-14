@@ -10,7 +10,9 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs --dts --clean",
     "dev": "ts-node src/index.ts",
@@ -18,18 +20,32 @@
     "benchmark": "ts-node benchmark/run.ts",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["rate-limiter", "redis", "express", "middleware", "sliding-window", "circuit-breaker"],
+  "keywords": [
+    "rate-limiter",
+    "redis",
+    "express",
+    "middleware",
+    "sliding-window",
+    "circuit-breaker"
+  ],
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "express": ">=4.0.0",
+    "express": "^5.2.1",
     "ioredis": ">=5.0.0"
   },
-  "devDependencies": {},
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testMatch": ["**/tests/**/*.test.ts"],
-    "collectCoverageFrom": ["src/**/*.ts"]
+    "testMatch": [
+      "**/tests/**/*.test.ts"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ]
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "tsup": "^8.5.1"
   }
 }
