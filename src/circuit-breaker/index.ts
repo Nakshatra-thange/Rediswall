@@ -78,12 +78,16 @@ import type {
       }
   
       if (this.state === "OPEN") {
-        // Check if cooldown has expired — if so, move to HALF_OPEN
         if (this.nextProbeAt && Date.now() >= this.nextProbeAt) {
           this.transitionTo("HALF_OPEN");
-          return true; // allow the probe through
+      
+          // reserve the single probe slot
+          this.probeInFlight = true;
+      
+          return true;
         }
-        return false; // still cooling down, use fallback
+      
+        return false;
       }
   
       if (this.state === "HALF_OPEN") {

@@ -7,7 +7,20 @@ import {
 } from "../src";
 
 const app = express();
-const redis = new Redis({ host: "localhost", port: 6379 });
+const redis = new Redis({
+    host: "localhost",
+    port: 6379,
+  
+    maxRetriesPerRequest: 1,
+    enableOfflineQueue: false,
+  
+    retryStrategy() {
+      return null;
+    },
+  });
+  redis.on("error", (err) => {
+    console.error("[redis]", err.message);
+  });
 
 // ── Shared config base ────────────────────────────────────────────────────────
 const baseConfig: Omit<RedisWallConfig, "strategy"> = {
@@ -80,9 +93,11 @@ app.get("/status", (_req, res) => {
   });
 });
 
+const PORT = Number(process.env.PORT ?? 3000);
+
 // ── Start ─────────────────────────────────────────────────────────────────────
-app.listen(3000, () => {
-  console.log("\nrediswall demo → http://localhost:3000");
+app.listen(PORT, () => {
+  console.log(`\nrediswall demo → http://localhost:${PORT}`);
   console.log("  GET /api/sliding-window    (limit: 10/min, free tier)");
   console.log("  GET /api/fixed-window");
   console.log("  GET /api/token-bucket");
