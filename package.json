@@ -1,13 +1,35 @@
 {
   "name": "rediswall",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "version": "0.1.0",
+  "description": "Distributed rate limiting framework for Express — sliding window, token bucket, circuit breaker, multi-tier",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
-  "keywords": [],
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs --dts --clean",
+    "dev": "ts-node src/index.ts",
+    "test": "jest",
+    "benchmark": "ts-node benchmark/run.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["rate-limiter", "redis", "express", "middleware", "sliding-window", "circuit-breaker"],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "license": "MIT",
+  "peerDependencies": {
+    "express": ">=4.0.0",
+    "ioredis": ">=5.0.0"
+  },
+  "devDependencies": {},
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.ts"],
+    "collectCoverageFrom": ["src/**/*.ts"]
+  }
 }

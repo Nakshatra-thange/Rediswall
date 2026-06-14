@@ -1,0 +1,9 @@
+src/
+tests/
+benchmark/
+docs/
+*.test.ts
+tsconfig.json
+.env
+.env.*
+node_modules/
