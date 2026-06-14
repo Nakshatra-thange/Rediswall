@@ -58,6 +58,7 @@ export interface RedisWallConfig {
   redis: Redis;
   strategy: StrategyName;
   tiers: TierMap;
+  failOpen ? : boolean;
   defaultTier: TierName;
   circuitBreaker?: CircuitBreakerConfig;
   identifierFn?: (req: Request) => string;   // defaults to IP
