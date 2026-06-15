@@ -2,7 +2,7 @@
 
 > Distributed rate limiting framework for Express — sliding window, token bucket, circuit breaker, multi-tier.
 
-[![npm version](https://badge.fury.io/js/rediswall.svg)](https://www.npmjs.com/package/rediswall)
+[![npm version](https://badge.fury.io/js/rediswall.svg)](https://www.npmjs.com/package/@nakshatrathange/rediswall)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
